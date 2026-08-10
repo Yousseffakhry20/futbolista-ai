@@ -1,0 +1,234 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Competition {
+  id                String              @id
+  name              String
+  country           String
+  tier              Int
+  LeagueStanding    LeagueStanding[]
+  Match             Match[]
+  SeasonCompetition SeasonCompetition[]
+}
+
+model LeagueStanding {
+  id             String      @id
+  competitionId  String
+  seasonId       String
+  teamId         String
+  position       Int
+  played         Int
+  won            Int
+  drawn          Int
+  lost           Int
+  goalsFor       Int
+  goalsAgainst   Int
+  goalDifference Int
+  points         Int
+  Competition    Competition @relation(fields: [competitionId], references: [id])
+  Season         Season      @relation(fields: [seasonId], references: [id])
+  Team           Team        @relation(fields: [teamId], references: [id])
+
+  @@unique([competitionId, seasonId, teamId])
+  @@index([seasonId])
+  @@index([teamId])
+}
+
+model Match {
+  id                          String             @id
+  competitionId               String
+  seasonId                    String
+  homeTeamId                  String
+  awayTeamId                  String
+  date                        DateTime
+  round                       String?
+  homeScore                   Int
+  awayScore                   Int
+  venue                       String?
+  status                      String             @default("completed")
+  Team_Match_awayTeamIdToTeam Team               @relation("Match_awayTeamIdToTeam", fields: [awayTeamId], references: [id])
+  Competition                 Competition        @relation(fields: [competitionId], references: [id])
+  Team_Match_homeTeamIdToTeam Team               @relation("Match_homeTeamIdToTeam", fields: [homeTeamId], references: [id])
+  Season                      Season             @relation(fields: [seasonId], references: [id])
+  PlayerMatchStats            PlayerMatchStats[]
+
+  @@index([awayTeamId])
+  @@index([competitionId])
+  @@index([date])
+  @@index([homeTeamId])
+  @@index([seasonId])
+}
+
+model Player {
+  id                String              @id
+  name              String
+  dateOfBirth       DateTime?
+  nationality       String?
+  position          String?
+  foot              String?
+  PlayerMatchStats  PlayerMatchStats[]
+  PlayerSeasonStats PlayerSeasonStats[]
+  PlayerTeamSeason  PlayerTeamSeason[]
+}
+
+model PlayerMatchStats {
+  id                    String  @id
+  matchId               String
+  playerId              String
+  teamId                String
+  minutesPlayed         Int     @default(0)
+  isStarter             Boolean @default(false)
+  rating                Float?
+  goals                 Int     @default(0)
+  assists               Int     @default(0)
+  penaltiesScored       Int     @default(0)
+  penaltiesMissed       Int     @default(0)
+  xG                    Float   @default(0.0)
+  xA                    Float   @default(0.0)
+  npxG                  Float   @default(0.0)
+  xGPerShot             Float   @default(0.0)
+  shots                 Int     @default(0)
+  shotsOnTarget         Int     @default(0)
+  shotsOffTarget        Int     @default(0)
+  blockedShots          Int     @default(0)
+  shotAccuracy          Float   @default(0.0)
+  passes                Int     @default(0)
+  passesCompleted       Int     @default(0)
+  passAccuracy          Float   @default(0.0)
+  keyPasses             Int     @default(0)
+  throughBalls          Int     @default(0)
+  crosses               Int     @default(0)
+  crossesCompleted      Int     @default(0)
+  longBalls             Int     @default(0)
+  longBallsCompleted    Int     @default(0)
+  passesIntoFinalThird  Int     @default(0)
+  passesIntoBox         Int     @default(0)
+  dribblesAttempted     Int     @default(0)
+  dribblesCompleted     Int     @default(0)
+  dribbleSuccessRate    Float   @default(0.0)
+  carriesIntoBox        Int     @default(0)
+  carriesIntoFinalThird Int     @default(0)
+  dispossessed          Int     @default(0)
+  tackles               Int     @default(0)
+  tacklesWon            Int     @default(0)
+  interceptions         Int     @default(0)
+  clearances            Int     @default(0)
+  blocks                Int     @default(0)
+  blockedShotsDef       Int     @default(0)
+  blockedPasses         Int     @default(0)
+  aerialDuelsWon        Int     @default(0)
+  aerialDuelsLost       Int     @default(0)
+  aerialDuelsTotal      Int     @default(0)
+  aerialWinRate         Float   @default(0.0)
+  defensiveActions      Int     @default(0)
+  pressures             Int     @default(0)
+  ballRecoveries        Int     @default(0)
+  fouls                 Int     @default(0)
+  foulsDrawn            Int     @default(0)
+  offsides              Int     @default(0)
+  yellowCards           Int     @default(0)
+  redCards              Int     @default(0)
+  secondYellowCards     Int     @default(0)
+  saves                 Int     @default(0)
+  savesInsideBox        Int     @default(0)
+  goalsConceded         Int     @default(0)
+  cleanSheets           Int     @default(0)
+  psXG                  Float?
+  psXGGa                Float?
+  claims                Int     @default(0)
+  punches               Int     @default(0)
+  Match                 Match   @relation(fields: [matchId], references: [id])
+  Player                Player  @relation(fields: [playerId], references: [id])
+  Team                  Team    @relation(fields: [teamId], references: [id])
+
+  @@unique([matchId, playerId])
+  @@index([matchId])
+  @@index([playerId])
+  @@index([teamId])
+}
+
+model PlayerSeasonStats {
+  id          String @id
+  playerId    String
+  teamId      String
+  seasonId    String
+  matches     Int    @default(0)
+  minutes     Int    @default(0)
+  goals       Int    @default(0)
+  xG          Float  @default(0.0)
+  npGoals     Int    @default(0)
+  npxG        Float  @default(0.0)
+  assists     Int    @default(0)
+  xA          Float  @default(0.0)
+  shots       Int    @default(0)
+  keyPasses   Int    @default(0)
+  yellowCards Int    @default(0)
+  redCards    Int    @default(0)
+  Player      Player @relation(fields: [playerId], references: [id])
+  Season      Season @relation(fields: [seasonId], references: [id])
+  Team        Team   @relation(fields: [teamId], references: [id])
+
+  @@unique([playerId, teamId, seasonId])
+  @@index([playerId])
+  @@index([seasonId])
+  @@index([teamId])
+}
+
+model PlayerTeamSeason {
+  id          String    @id
+  playerId    String
+  teamId      String
+  seasonId    String
+  shirtNumber Int?
+  startDate   DateTime
+  endDate     DateTime?
+  isLoan      Boolean   @default(false)
+  Player      Player    @relation(fields: [playerId], references: [id])
+  Season      Season    @relation(fields: [seasonId], references: [id])
+  Team        Team      @relation(fields: [teamId], references: [id])
+
+  @@unique([playerId, teamId, seasonId])
+  @@index([playerId])
+  @@index([seasonId])
+  @@index([teamId])
+}
+
+model Season {
+  id                String              @id
+  name              String
+  startDate         DateTime
+  endDate           DateTime
+  LeagueStanding    LeagueStanding[]
+  Match             Match[]
+  PlayerSeasonStats PlayerSeasonStats[]
+  PlayerTeamSeason  PlayerTeamSeason[]
+  SeasonCompetition SeasonCompetition[]
+}
+
+model SeasonCompetition {
+  competitionId String
+  seasonId      String
+  Competition   Competition @relation(fields: [competitionId], references: [id])
+  Season        Season      @relation(fields: [seasonId], references: [id])
+
+  @@id([competitionId, seasonId])
+}
+
+model Team {
+  id                           String              @id
+  name                         String
+  shortName                    String?
+  logoUrl                      String?
+  LeagueStanding               LeagueStanding[]
+  Match_Match_awayTeamIdToTeam Match[]             @relation("Match_awayTeamIdToTeam")
+  Match_Match_homeTeamIdToTeam Match[]             @relation("Match_homeTeamIdToTeam")
+  PlayerMatchStats             PlayerMatchStats[]
+  PlayerSeasonStats            PlayerSeasonStats[]
+  PlayerTeamSeason             PlayerTeamSeason[]
+}
