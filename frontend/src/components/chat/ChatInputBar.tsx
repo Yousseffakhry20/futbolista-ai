@@ -47,8 +47,7 @@ export function ChatInputBar({
     <TooltipProvider>
       <div className="relative mx-auto w-full max-w-3xl px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         
-        {/* Floating Glassmorphism Container */}
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-card/90 p-2 shadow-2xl backdrop-blur-md transition-all focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/20">
+        <div className="relative overflow-hidden rounded-xl border border-border bg-card p-2 transition-colors focus-within:border-primary">
           
           <label htmlFor="chat-input" className="sr-only">Ask a football intelligence question</label>
           <Textarea
@@ -99,7 +98,7 @@ export function ChatInputBar({
                 disabled={disabled || !value.trim()}
                 size="sm"
                 aria-label="Send message"
-                className="h-8 rounded-xl gap-1.5 font-semibold px-3 shadow-sm"
+                className="h-8 rounded-md gap-1.5 font-semibold px-3 shadow-none"
               >
                 <span>Send</span>
                 <SendHorizonal className="h-3.5 w-3.5" />
@@ -111,7 +110,7 @@ export function ChatInputBar({
         </div>
 
         <p className="mt-2 text-center text-[11px] text-muted-foreground">
-          Futbolista AI relies on empirical Understat dataset statistics. Press <kbd className="font-mono text-[10px] bg-muted px-1 rounded">⌘ + Enter</kbd> to send.
+          Understat-derived rows are shown with each returned result. Press <kbd className="font-mono text-[10px] bg-muted px-1 rounded">⌘ + Enter</kbd> to send.
         </p>
 
       </div>

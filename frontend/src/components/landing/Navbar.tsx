@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Sparkles, Menu, Search, ArrowRight, Activity } from "lucide-react"
+import { Menu, Search, ArrowRight, Activity } from "lucide-react"
 
 export function Navbar({ onOpenCommandMenu }: { onOpenCommandMenu?: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -16,7 +16,7 @@ export function Navbar({ onOpenCommandMenu }: { onOpenCommandMenu?: () => void }
   ]
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-md transition-all">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background transition-all">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:shadow-lg focus:outline-none"
@@ -27,17 +27,12 @@ export function Navbar({ onOpenCommandMenu }: { onOpenCommandMenu?: () => void }
         
         {/* Logo & Branding */}
         <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-90">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 border border-primary/30 text-primary shadow-sm">
+          <div className="flex h-9 w-9 items-center justify-center border border-primary text-primary">
             <Activity className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="font-sans text-lg font-extrabold tracking-tight text-foreground">
-                Futbolista<span className="text-primary">AI</span>
-              </span>
-              <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary border border-primary/20">
-                PRO
-              </span>
+              <span className="font-sans text-lg font-extrabold tracking-tight text-foreground">Futbolista</span><span className="font-mono text-[10px] text-primary">/ DATA</span>
             </div>
           </div>
         </Link>
@@ -61,7 +56,7 @@ export function Navbar({ onOpenCommandMenu }: { onOpenCommandMenu?: () => void }
           {/* Quick Search ⌘K Trigger */}
           <button
             onClick={onOpenCommandMenu}
-            className="hidden sm:flex items-center gap-2 rounded-xl border border-input bg-background/60 px-3 py-1.5 text-xs text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
+            className="hidden sm:flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             aria-label="Quick Search"
           >
             <Search className="h-3.5 w-3.5" />
@@ -75,7 +70,7 @@ export function Navbar({ onOpenCommandMenu }: { onOpenCommandMenu?: () => void }
           <Button
             onClick={() => navigate("/app")}
             size="sm"
-            className="rounded-xl shadow-md gap-1.5"
+            className="rounded-md shadow-none gap-1.5"
           >
             <span>Launch App</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -91,8 +86,7 @@ export function Navbar({ onOpenCommandMenu }: { onOpenCommandMenu?: () => void }
             <SheetContent side="right" className="w-72 bg-background border-border">
               <SheetHeader className="text-left pb-4 border-b border-border">
                 <SheetTitle className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  <span>Futbolista AI</span>
+                  <Activity className="h-4 w-4 text-primary" /><span>Futbolista / Data</span>
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-4 py-6">

@@ -16,20 +16,19 @@ import type { ChartSpec, PlayerData } from "@/types/chat"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
-const AMBER = "#e8a33d"
-const AMBER_SOFT = "#f0bc6d"
-const MINT = "#7dd3c0"
-const LINE = "#375d50"
-const CHALK_MUTED = "#9fb3aa"
+const SIGNAL = "#D8B336"
+const SIGNAL_SOFT = "#F1E3A1"
+const GRAPHITE = "#343434"
+const MUTED = "#A8A69F"
 
 function CustomTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null
   const row = payload[0].payload
   return (
-    <div className="rounded-md border border-line-600 bg-pitch-900 px-3 py-2 text-xs shadow-xl">
-      <p className="font-display text-sm uppercase tracking-wide text-chalk">{row.name}</p>
-      <p className="text-chalk-muted">{row.team} · {row.position}</p>
-      <p className="mt-1 font-mono text-amber-soft">{row.value}</p>
+    <div className="border border-border bg-popover px-3 py-2 text-xs shadow-xl">
+      <p className="text-sm font-semibold text-foreground">{row.name}</p>
+      <p className="text-muted-foreground">{row.team} · {row.position}</p>
+      <p className="mt-1 font-mono text-primary">{row.value}</p>
     </div>
   )
 }
@@ -42,10 +41,10 @@ export function StatChart({ spec, data }: { spec: ChartSpec; data: PlayerData })
   }))
 
   return (
-    <Card className="w-full">
-      <CardHeader className="flex-row items-center justify-between space-y-0">
+    <Card className="w-full rounded-md shadow-none">
+      <CardHeader className="flex-row items-start justify-between space-y-0 border-b border-border">
         <div>
-          <CardTitle>{spec.title}</CardTitle>
+          <p className="utility-label mb-1">Returned data</p><CardTitle className="text-base">{spec.title}</CardTitle>
           <div className="mt-1 flex flex-wrap gap-1.5">
             {data.filters.season && <Badge variant="default">{data.filters.season}</Badge>}
             {data.filters.position && <Badge>{data.filters.position}</Badge>}
@@ -53,36 +52,29 @@ export function StatChart({ spec, data }: { spec: ChartSpec; data: PlayerData })
             {data.filters.min_minutes && <Badge>{data.filters.min_minutes}+ mins</Badge>}
           </div>
         </div>
-        <Badge variant="default">{data.count} players</Badge>
+        <Badge variant="outline" className="rounded-sm font-mono text-[10px]">{data.count} players</Badge>
       </CardHeader>
       <CardContent>
         <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
             {spec.chart_type === "line" ? (
               <LineChart data={rows} margin={{ top: 8, right: 12, left: -12, bottom: 8 }}>
-                <CartesianGrid stroke={LINE} strokeDasharray="4 4" vertical={false} />
-                <XAxis dataKey="shortName" stroke={CHALK_MUTED} fontSize={11} tickLine={false} />
-                <YAxis stroke={CHALK_MUTED} fontSize={11} tickLine={false} />
-                <Tooltip content={<CustomTooltip />} cursor={{ stroke: LINE }} />
-                <Line type="monotone" dataKey="value" stroke={AMBER} strokeWidth={2.5} dot={{ r: 3, fill: AMBER }} />
+                <CartesianGrid stroke={GRAPHITE} strokeDasharray="3 5" vertical={false} />
+                <XAxis dataKey="shortName" stroke={MUTED} fontSize={11} tickLine={false} /><YAxis stroke={MUTED} fontSize={11} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: GRAPHITE }} /><Line type="monotone" dataKey="value" stroke={SIGNAL} strokeWidth={2.5} dot={{ r: 3, fill: SIGNAL }} />
               </LineChart>
             ) : spec.chart_type === "scatter" ? (
               <ScatterChart margin={{ top: 8, right: 12, left: -12, bottom: 8 }}>
-                <CartesianGrid stroke={LINE} strokeDasharray="4 4" />
-                <XAxis dataKey="xg" name="xG" stroke={CHALK_MUTED} fontSize={11} tickLine={false} />
-                <YAxis dataKey="xa" name="xA" stroke={CHALK_MUTED} fontSize={11} tickLine={false} />
-                <Tooltip content={<CustomTooltip />} cursor={{ stroke: LINE }} />
-                <Scatter data={rows} fill={MINT} />
+                <CartesianGrid stroke={GRAPHITE} strokeDasharray="3 5" /><XAxis dataKey="xg" name="xG" stroke={MUTED} fontSize={11} tickLine={false} /><YAxis dataKey="xa" name="xA" stroke={MUTED} fontSize={11} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: GRAPHITE }} /><Scatter data={rows} fill={SIGNAL} />
               </ScatterChart>
             ) : (
               <BarChart data={rows} margin={{ top: 8, right: 12, left: -12, bottom: 8 }}>
-                <CartesianGrid stroke={LINE} strokeDasharray="4 4" vertical={false} />
-                <XAxis dataKey="shortName" stroke={CHALK_MUTED} fontSize={11} tickLine={false} interval={0} angle={-25} textAnchor="end" height={50} />
-                <YAxis stroke={CHALK_MUTED} fontSize={11} tickLine={false} />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.03)" }} />
+                <CartesianGrid stroke={GRAPHITE} strokeDasharray="3 5" vertical={false} /><XAxis dataKey="shortName" stroke={MUTED} fontSize={11} tickLine={false} interval={0} angle={-25} textAnchor="end" height={50} /><YAxis stroke={MUTED} fontSize={11} tickLine={false} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(216,179,54,0.08)" }} />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                   {rows.map((_, i) => (
-                    <Cell key={i} fill={i === 0 ? AMBER : AMBER_SOFT} fillOpacity={i === 0 ? 1 : 0.55 + 0.35 * (1 - i / rows.length)} />
+                    <Cell key={i} fill={i === 0 ? SIGNAL : SIGNAL_SOFT} fillOpacity={i === 0 ? 1 : 0.42 + 0.36 * (1 - i / rows.length)} />
                   ))}
                 </Bar>
               </BarChart>

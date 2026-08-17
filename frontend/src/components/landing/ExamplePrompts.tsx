@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
-import { MessageSquare, ArrowUpRight, Copy, Check, Sparkles } from "lucide-react"
+import { MessageSquare, ArrowUpRight, Copy, Check } from "lucide-react"
 
 const PROMPTS = [
   {

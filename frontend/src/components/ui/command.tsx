@@ -23,7 +23,7 @@ Command.displayName = CommandPrimitive.displayName
 
 interface CommandDialogProps extends DialogProps {}
 
-const CommandDialog = ({ children, open, onOpenChange, ...props }: CommandDialogProps) => {
+const CommandDialog = ({ children, open, onOpenChange }: CommandDialogProps) => {
   if (!open) return null
 
   return (

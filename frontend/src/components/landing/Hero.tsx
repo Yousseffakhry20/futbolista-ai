@@ -1,214 +1,49 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { motion, useReducedMotion } from "framer-motion"
+import { ArrowRight, CornerDownRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { StatChart } from "@/components/charts/StatChart"
-import { Sparkles, ArrowRight, Play, Terminal, Database, CheckCircle2 } from "lucide-react"
+import { TacticalTrace } from "@/components/TacticalTrace"
 
-const HERO_PROMPTS = [
-  {
-    id: "vinicius-mbappe",
-    label: "Compare Vinicius vs Mbappé",
-    spec: { chart_type: "bar" as const, title: "Vinicius Jr. vs Kylian Mbappé (xG & xA per 90)", x_key: "shortName", y_key: "value" },
-    data: {
-      stat: "xG + xA per 90",
-      column: "value",
-      filters: { season: "2025-2026", min_minutes: 500 },
-      count: 2,
-      players: [
-        { name: "Kylian Mbappé", team: "Real Madrid", season: "2025-26", position: "FW", games: 22, minutes: 1840, value: 0.94, xg: 0.72, xa: 0.22 },
-        { name: "Vinícius Júnior", team: "Real Madrid", season: "2025-26", position: "FW", games: 21, minutes: 1720, value: 0.88, xg: 0.61, xa: 0.27 },
-      ],
-    },
-  },
-  {
-    id: "u21-midfielders",
-    label: "Best U21 Midfielders",
-    spec: { chart_type: "bar" as const, title: "Top U21 Midfielders by Key Passes per 90", x_key: "shortName", y_key: "value" },
-    data: {
-      stat: "Key Passes / 90",
-      column: "value",
-      filters: { season: "2025-2026", position: "MF" },
-      count: 4,
-      players: [
-        { name: "Pedri", team: "Barcelona", season: "2025-26", position: "MF", games: 24, minutes: 1980, value: 3.1, xg: 0.25, xa: 0.45 },
-        { name: "Jude Bellingham", team: "Real Madrid", season: "2025-26", position: "MF", games: 20, minutes: 1650, value: 2.8, xg: 0.42, xa: 0.38 },
-        { name: "Gavi", team: "Barcelona", season: "2025-26", position: "MF", games: 19, minutes: 1420, value: 2.4, xg: 0.18, xa: 0.31 },
-        { name: "Arda Güler", team: "Real Madrid", season: "2025-26", position: "MF", games: 18, minutes: 1100, value: 2.2, xg: 0.22, xa: 0.35 },
-      ],
-    },
-  },
-  {
-    id: "xg-leaders",
-    label: "Top 5 xG Leaders",
-    spec: { chart_type: "bar" as const, title: "Top European Forwards by Expected Goals (xG)", x_key: "shortName", y_key: "value" },
-    data: {
-      stat: "xG Total",
-      column: "value",
-      filters: { season: "2025-2026", min_minutes: 1000 },
-      count: 5,
-      players: [
-        { name: "Erling Haaland", team: "Man City", season: "2025-26", position: "FW", games: 23, minutes: 2010, value: 19.8, xg: 19.8, xa: 3.2 },
-        { name: "Harry Kane", team: "Bayern", season: "2025-26", position: "FW", games: 22, minutes: 1920, value: 17.4, xg: 17.4, xa: 5.1 },
-        { name: "Robert Lewandowski", team: "Barcelona", season: "2025-26", position: "FW", games: 24, minutes: 1880, value: 15.2, xg: 15.2, xa: 2.8 },
-        { name: "Kylian Mbappé", team: "Real Madrid", season: "2025-26", position: "FW", games: 22, minutes: 1840, value: 14.7, xg: 14.7, xa: 4.5 },
-        { name: "Mohamed Salah", team: "Liverpool", season: "2025-26", position: "FW", games: 23, minutes: 1950, value: 13.9, xg: 13.9, xa: 8.2 },
-      ],
-    },
-  },
+const queries = [
+  { label: "Compare Vinícius and Mbappé", filter: "FW · La Liga · 2025–26", result: "0.94", metric: "xG + xA / 90" },
+  { label: "Find U21 midfield creators", filter: "MF · U21 · Top 5 leagues", result: "3.10", metric: "key passes / 90" },
+  { label: "Rank xG leaders", filter: "FW · 1,000+ minutes", result: "19.8", metric: "expected goals" },
 ]
 
 export function Hero() {
-  const [activePrompt, setActivePrompt] = useState(HERO_PROMPTS[0])
+  const [active, setActive] = useState(0)
   const navigate = useNavigate()
-
-  return (
-    <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28">
-      
-      {/* Subtle Background Radial Glow */}
-      <div className="pointer-events-none absolute top-1/4 left-1/2 -z-10 h-[400px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[120px]" />
-      
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
-        {/* Main Hero Header Content */}
-        <div className="mx-auto max-w-3xl text-center">
-          
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary shadow-sm mb-6">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Understat DB Live Intelligence</span>
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-          </div>
-
-          {/* Headline */}
-          <h1 className="font-sans text-4xl font-black tracking-tight text-foreground sm:text-6xl sm:leading-[1.15]">
-            AI-Powered <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-              Football Intelligence
-            </span>
-          </h1>
-
-          {/* Subheadline */}
-          <p className="mt-6 text-lg text-muted-foreground leading-relaxed sm:text-xl max-w-2xl mx-auto">
-            Analyze players, compare performances, scout talents, and discover tactical insights using natural language.
-          </p>
-
-          {/* Primary & Secondary CTAs */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button
-              onClick={() => navigate("/app")}
-              size="lg"
-              className="w-full sm:w-auto rounded-xl gap-2 font-bold shadow-lg shadow-primary/20"
-            >
-              <span>Start Free</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="w-full sm:w-auto rounded-xl gap-2 border-border"
-            >
-              <a href="#prompts">
-                <Play className="h-4 w-4 text-primary fill-primary" />
-                <span>Explore Prompts</span>
-              </a>
-            </Button>
-          </div>
-
-          {/* Trust Highlights */}
-          <div className="mt-8 flex items-center justify-center gap-6 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-              <span>50+ Top Leagues</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-              <span>100% Data Fidelity</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-              <span>Instant AI Visuals</span>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Interactive Live Query Sandbox Container */}
-        <div className="mt-14 max-w-4xl mx-auto">
-          <Card className="overflow-hidden border-border bg-card/90 backdrop-blur-md shadow-2xl rounded-2xl">
-            
-            {/* Sandbox Header / Terminal Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-muted/40 px-5 py-3.5">
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1.5">
-                  <div className="h-3 w-3 rounded-full bg-red-500/80" />
-                  <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
-                  <div className="h-3 w-3 rounded-full bg-green-500/80" />
-                </div>
-                <div className="h-4 w-px bg-border mx-1" />
-                <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-                  <Terminal className="h-3.5 w-3.5 text-primary" />
-                  <span>Futbolista Sandbox Terminal</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="gap-1 text-[11px] font-mono border-primary/30 text-primary">
-                  <Database className="h-3 w-3" />
-                  <span>Understat Live</span>
-                </Badge>
-              </div>
-            </div>
-
-            {/* Prompt Selector Chips */}
-            <div className="p-4 bg-muted/20 border-b border-border">
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-                <span className="text-xs font-semibold text-muted-foreground shrink-0">Try Query:</span>
-                {HERO_PROMPTS.map((prompt) => {
-                  const isActive = activePrompt.id === prompt.id
-                  return (
-                    <button
-                      key={prompt.id}
-                      onClick={() => setActivePrompt(prompt)}
-                      className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-medium transition-all ${
-                        isActive
-                          ? "bg-primary text-primary-foreground font-semibold shadow-sm"
-                          : "bg-background border border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
-                      }`}
-                    >
-                      {prompt.label}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Live Chart Preview Canvas */}
-            <CardContent className="p-6">
-              <div className="transition-all duration-300">
-                <StatChart spec={activePrompt.spec} data={activePrompt.data} />
-              </div>
-              <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-                <span className="font-mono text-[11px]">Query: "{activePrompt.data.stat}" across Top 5 Leagues</span>
-                <Button
-                  onClick={() => navigate(`/app?q=${encodeURIComponent(activePrompt.label)}`)}
-                  variant="ghost"
-                  size="xs"
-                  className="gap-1 text-primary hover:text-primary"
-                >
-                  <span>Open Query in App</span>
-                  <ArrowRight className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardContent>
-
-          </Card>
-        </div>
-
-      </div>
-    </section>
-  )
+  const reducedMotion = useReducedMotion()
+  const query = queries[active]
+  return <section className="border-b border-border" aria-labelledby="hero-title">
+    <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:py-20 lg:grid-cols-[.92fr_1.08fr] lg:gap-16 lg:px-8">
+      <motion.div initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .38 }} className="flex flex-col justify-center">
+        <p className="utility-label mb-5 text-primary">Live analysis / 2025–26</p>
+        <motion.h1
+          id="hero-title"
+          className="group max-w-xl cursor-default font-heading text-5xl font-semibold leading-[.95] tracking-[-.06em] text-foreground sm:text-6xl lg:text-7xl"
+          whileHover={reducedMotion ? undefined : "inspect"}
+          initial="rest"
+        >
+          <motion.span className="relative block" variants={{ rest: { y: 0 }, inspect: { y: -3 } }} transition={{ duration: .18, ease: "easeOut" }}>
+            Turn a football
+            {/* <span className="pointer-events-none absolute -left-8 top-1/2 hidden -translate-y-1/2 -translate-x-1 text-[9px] font-mono font-medium tracking-[.12em] text-primary opacity-0 transition-all duration-150 group-hover:-translate-x-2 group-hover:opacity-100 motion-reduce:hidden lg:block">01 / QUESTION</span> */}
+          </motion.span>
+          <motion.span className="relative mt-1 block" variants={{ rest: { y: 0 }, inspect: { y: 3 } }} transition={{ duration: .18, ease: "easeOut" }}>
+            question into <span className="transition-colors duration-150 group-hover:text-primary">evidence.</span>
+            {/* <span className="pointer-events-none absolute -right-24 top-1/2 hidden -translate-y-1/2 translate-x-1 text-[9px] font-mono font-medium tracking-[.12em] text-primary opacity-0 transition-all duration-150 group-hover:translate-x-2 group-hover:opacity-100 motion-reduce:hidden lg:block">02 / EVIDENCE</span> */}
+          </motion.span>
+        </motion.h1>
+        <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg">Compare players, inspect the filters behind each result, and work from Understat-derived data without building a spreadsheet first.</p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row"><Button onClick={() => navigate("/app")} size="lg" className="rounded-md font-semibold"><span>Enter workspace</span><ArrowRight /></Button><a href="#method" className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-border px-5 text-sm font-medium text-foreground transition-colors hover:border-primary hover:text-primary"><CornerDownRight className="h-4 w-4" />How the data is used</a></div>
+      </motion.div>
+      <motion.div initial={reducedMotion ? false : { opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .45, delay: .12 }} className="border border-border bg-card p-4 sm:p-6">
+        <div className="flex items-center justify-between border-b border-border pb-3"><span className="utility-label">Analysis relay</span><span className="font-mono text-[11px] text-primary">LIVE DATA PATH</span></div>
+        <div className="mt-5 grid gap-3" role="tablist" aria-label="Example queries">{queries.map((item, i) => <button key={item.label} onClick={() => setActive(i)} role="tab" aria-selected={active === i} className={`grid min-h-12 grid-cols-[20px_1fr] items-center gap-3 border-l-2 px-3 text-left text-sm transition-colors ${active === i ? "border-primary bg-secondary text-foreground" : "border-transparent text-muted-foreground hover:bg-muted"}`}><span className="font-mono text-[11px]">0{i + 1}</span><span>{item.label}</span></button>)}</div>
+        <div className="mt-6 grid border-y border-border py-5 sm:grid-cols-[1fr_160px] sm:gap-8"><div><p className="utility-label">Parsed filters</p><p className="mt-2 font-mono text-xs text-foreground">{query.filter}</p><TacticalTrace key={active} className="mt-4 h-20 w-full" /></div><div className="mt-4 border-l border-border pl-4 sm:mt-0"><p className="utility-label">Result</p><p className="mt-2 font-mono text-4xl font-medium text-primary">{query.result}</p><p className="mt-1 text-xs leading-5 text-muted-foreground">{query.metric}</p></div></div>
+        <p className="mt-4 font-mono text-[11px] text-muted-foreground">Question → filters → data points → report</p>
+      </motion.div>
+    </div>
+  </section>
 }

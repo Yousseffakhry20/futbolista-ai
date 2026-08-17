@@ -113,20 +113,7 @@ export async function getTopPlayers(args: GetTopPlayersArgs): Promise<GetTopPlay
       where,
       orderBy: { [column]: "desc" } as Prisma.PlayerSeasonStatsOrderByWithRelationInput,
       take: safeLimit,
-      select: {
-        // every scalar stat column, so the ranked `column` is always selected
-        matches: true,
-        minutes: true,
-        goals: true,
-        xG: true,
-        npGoals: true,
-        npxG: true,
-        assists: true,
-        xA: true,
-        shots: true,
-        keyPasses: true,
-        yellowCards: true,
-        redCards: true,
+      include: {
         Player: { select: { name: true, position: true } },
         Team: { select: { name: true } },
         Season: { select: { name: true } },
@@ -145,6 +132,8 @@ export async function getTopPlayers(args: GetTopPlayersArgs): Promise<GetTopPlay
       count: rows.length,
       players: rows.map((row) => {
         const raw = row as unknown as Record<string, unknown>;
+        const val = Number(raw[column] ?? 0);
+        const safeVal = Number.isFinite(val) ? val : 0;
         return {
           name: row.Player.name,
           team: row.Team.name,
@@ -152,12 +141,13 @@ export async function getTopPlayers(args: GetTopPlayersArgs): Promise<GetTopPlay
           position: row.Player.position ?? "",
           games: row.matches,
           minutes: row.minutes,
-          value: Number(raw[column] ?? 0),
+          value: safeVal,
           // include a few extra stats for context in the UI/tooltip
           goals: row.goals,
           assists: row.assists,
           xg: row.xG,
           xa: row.xA,
+          [column]: safeVal,
         };
       }),
     };

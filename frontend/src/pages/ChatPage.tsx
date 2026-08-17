@@ -9,7 +9,7 @@ import { MessageItem } from "@/components/chat/MessageItem"
 import { ChatInputBar } from "@/components/chat/ChatInputBar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CommandMenu } from "@/components/CommandMenu"
-import { ArrowDown, AlertCircle, RefreshCw } from "lucide-react"
+import { ArrowDown, AlertCircle } from "lucide-react"
 
 function uid() {
   return Math.random().toString(36).slice(2, 10)

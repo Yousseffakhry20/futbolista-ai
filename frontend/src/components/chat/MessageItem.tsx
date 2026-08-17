@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
 import { Copy, Check, BarChart2, Table as TableIcon, RefreshCw, Activity, User } from "lucide-react"
+import { TacticalTrace } from "@/components/TacticalTrace"
+import { motion, useReducedMotion } from "framer-motion"
 
 export function MessageItem({
   message,
@@ -18,6 +20,7 @@ export function MessageItem({
   const isUser = message.role === "user"
   const [viewMode, setViewMode] = useState<"chart" | "table">("chart")
   const [copied, setCopied] = useState(false)
+  const reducedMotion = useReducedMotion()
 
   const handleCopy = () => {
     navigator.clipboard.writeText(message.text)
@@ -27,16 +30,16 @@ export function MessageItem({
 
   if (isUser) {
     return (
-      <div className="flex justify-end mb-6">
+      <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .16 }} className="flex justify-end mb-6">
         <div className="flex items-start gap-3 max-w-[85%] sm:max-w-[75%]">
-          <div className="rounded-2xl rounded-tr-sm bg-muted/80 border border-border px-4 py-3 text-sm text-foreground font-sans shadow-sm">
+          <div className="border-l-2 border-primary bg-secondary px-4 py-3 text-sm text-foreground font-sans">
             {message.text}
           </div>
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted border border-border text-muted-foreground">
             <User className="h-4 w-4" />
           </div>
         </div>
-      </div>
+      </motion.div>
     )
   }
 
@@ -44,7 +47,7 @@ export function MessageItem({
 
   return (
     <TooltipProvider>
-      <div className="flex gap-3.5 mb-8">
+      <motion.div initial={reducedMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .22 }} className="flex gap-3.5 mb-8">
         
         {/* Assistant Avatar */}
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 border border-primary/30 text-primary mt-0.5">
@@ -53,6 +56,7 @@ export function MessageItem({
 
         {/* Message Content Body */}
         <div className="flex-1 space-y-4 overflow-hidden">
+          <div className="flex items-center gap-3"><span className="utility-label text-primary">Analysis report</span><span className="h-px flex-1 bg-border" /></div>
           
           {/* Text Response / Markdown */}
           <div className="text-sm leading-relaxed text-foreground">
@@ -61,7 +65,7 @@ export function MessageItem({
 
           {/* Dual-View Chart vs Accessible Table Canvas */}
           {hasData && (
-            <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-md">
+            <div className="border border-border bg-card overflow-hidden shadow-none">
               
               {/* Dual-View Control Header */}
               <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2.5">
@@ -97,6 +101,7 @@ export function MessageItem({
 
               {/* View Content Canvas */}
               <div className="p-4">
+                <TacticalTrace className="mb-2 h-10 w-full" />
                 {viewMode === "chart" ? (
                   <StatChart spec={message.chartSpec!} data={message.data!} />
                 ) : (
@@ -169,7 +174,7 @@ export function MessageItem({
 
         </div>
 
-      </div>
+      </motion.div>
     </TooltipProvider>
   )
 }

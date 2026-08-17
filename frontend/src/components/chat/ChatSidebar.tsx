@@ -4,21 +4,17 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Plus,
   MessageSquare,
   Search,
-  Bookmark,
   Settings,
   PanelLeftClose,
   PanelLeft,
   Activity,
   Trash2,
-  SlidersHorizontal,
-  LogOut,
 } from "lucide-react"
 
 export interface ChatThread {
@@ -65,7 +61,7 @@ export function ChatSidebar({
   }
 
   const SidebarContent = () => (
-    <div className="flex h-full flex-col bg-card text-card-foreground border-r border-border font-sans">
+    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground border-r border-border font-sans">
       
       {/* Header & Logo */}
       <div className="flex h-14 items-center justify-between px-3 border-b border-border/60">
@@ -73,11 +69,11 @@ export function ChatSidebar({
           onClick={() => navigate("/")}
           className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-90 px-1"
         >
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 border border-primary/30 text-primary">
+          <div className="flex h-7 w-7 items-center justify-center border border-primary text-primary">
             <Activity className="h-4 w-4" />
           </div>
           <span className="font-sans text-base font-bold tracking-tight text-foreground">
-            Futbolista<span className="text-primary">AI</span>
+            Futbolista <span className="font-mono text-xs text-primary">/ DATA</span>
           </span>
         </div>
 
@@ -106,7 +102,7 @@ export function ChatSidebar({
             onNewChat()
             setMobileOpen(false)
           }}
-          className="w-full rounded-xl gap-2 font-semibold shadow-md"
+          className="w-full rounded-md gap-2 font-semibold shadow-none"
         >
           <Plus className="h-4 w-4" />
           <span>New Analysis</span>
@@ -160,9 +156,9 @@ export function ChatSidebar({
                           onSelectThread(thread.id)
                           setMobileOpen(false)
                         }}
-                        className={`group flex items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-xs transition-colors cursor-pointer ${
+                        className={`group flex items-center justify-between gap-2 border-l-2 px-2.5 py-2 text-xs transition-colors cursor-pointer ${
                           isActive
-                            ? "bg-primary/10 text-primary font-semibold border border-primary/20"
+                            ? "border-primary bg-secondary text-foreground font-semibold"
                             : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                         }`}
                       >
@@ -229,7 +225,7 @@ export function ChatSidebar({
             <Button
               variant="outline"
               size="icon-sm"
-              className="fixed left-3 top-3.5 z-30 rounded-xl border-border bg-background/80 backdrop-blur-md shadow-sm"
+              className="fixed left-3 top-3.5 z-30 rounded-md border-border bg-background shadow-sm"
               aria-label="Open Mobile Sidebar"
             >
               <PanelLeft className="h-4 w-4" />

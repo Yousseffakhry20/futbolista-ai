@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-import { PanelLeft, Sparkles, Download, FileSpreadsheet, FileText, ArrowLeft, Share2, Plus } from "lucide-react"
+import { PanelLeft, Download, FileSpreadsheet, FileText, ArrowLeft, Share2, Plus } from "lucide-react"
 
 export function ChatHeader({
   isSidebarCollapsed,
@@ -27,7 +27,7 @@ export function ChatHeader({
 
   return (
     <TooltipProvider>
-      <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur-md">
+      <header className="sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-border bg-background px-4">
         
         {/* Left Toggles & Title */}
         <div className="flex items-center gap-3">
@@ -66,9 +66,8 @@ export function ChatHeader({
             <h2 className="font-sans text-sm font-bold tracking-tight text-foreground truncate max-w-[200px] sm:max-w-xs">
               {chatTitle}
             </h2>
-            <Badge variant="outline" className="hidden sm:inline-flex gap-1 text-[10px] border-primary/30 text-primary font-mono">
-              <Sparkles className="h-3 w-3" />
-              <span>Understat DB</span>
+            <Badge variant="outline" className="hidden sm:inline-flex gap-1 rounded-sm text-[10px] border-primary/50 text-primary font-mono">
+              <span>UNDERSTAT ROWS</span>
             </Badge>
           </div>
         </div>
@@ -106,7 +105,7 @@ export function ChatHeader({
                 <span>Copy Markdown Table</span>
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2">
-                <Share2 className="h-4 w-4 text-purple-500" />
+                <Share2 className="h-4 w-4 text-primary" />
                 <span>Share Analysis Link</span>
               </DropdownMenuItem>
             </DropdownMenuContent>

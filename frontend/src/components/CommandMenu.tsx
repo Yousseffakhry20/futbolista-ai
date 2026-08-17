@@ -65,7 +65,7 @@ export function CommandMenu({
             <span>Compare Vinicius Jr. and Kylian Mbappé</span>
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => navigate("/app?q=Best+U21+midfielders+in+2025-2026"))}>
-            <Trophy className="mr-2 h-4 w-4 text-amber-500" />
+            <Trophy className="mr-2 h-4 w-4 text-primary" />
             <span>Best U21 midfielders in 2025-2026 season</span>
           </CommandItem>
           <CommandItem onSelect={() => runCommand(() => navigate("/app?q=Top+10+players+by+xG+this+season"))}>
